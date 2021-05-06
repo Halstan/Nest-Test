@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Posts } from '../entity/posts.entity';
 
 @Injectable()
@@ -16,6 +16,15 @@ export class PostService {
 
   addPost(post: Posts): Promise<Posts> {
     return this.postRepository.save(post);
+  }
+
+  findByUsuario(username: string) {
+    console.log(username);
+    return this.postRepository
+      .createQueryBuilder('posts')
+      .innerJoinAndSelect('posts.usuario', 'usuario')
+      .where('usuario.nombreDeUsuario = :username', { username: username })
+      .getMany();
   }
 
   findById(id: number): Promise<Posts> {

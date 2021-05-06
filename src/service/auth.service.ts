@@ -34,7 +34,7 @@ export class AuthService {
           token.token = jwt;
           token.usuario = user;
           this.tokenRepository.save(token);
-          return jwt;
+          return { access_token: jwt };
         }
       }
     } catch (error) {

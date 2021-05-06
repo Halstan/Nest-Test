@@ -6,10 +6,13 @@ import {
   Param,
   Post,
   Put,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { PostService } from '../service/post.service';
 import { Posts } from '../entity/posts.entity';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 
 @ApiTags('posts')
 @Controller({
@@ -31,6 +34,13 @@ export class PostController {
   @Get(':id')
   findPost(@Param('id') id: number): Promise<Posts> {
     return this.postService.findById(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/usuario/my')
+  findByUsuario(@Request() req) {
+    const username = req.user.username;
+    return this.postService.findByUsuario(username);
   }
 
   @Put(':id')
