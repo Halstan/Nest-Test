@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Posts } from '../entity/posts';
+import { DeepPartial, Repository } from 'typeorm';
+import { Posts } from '../entity/posts.entity';
 
 @Injectable()
 export class PostService {
@@ -11,7 +11,7 @@ export class PostService {
   ) {}
 
   findAll(): Promise<Posts[]> {
-    return this.postRepository.find();
+    return this.postRepository.find({ relations: ['usuario'] });
   }
 
   addPost(post: Posts): Promise<Posts> {
@@ -19,10 +19,18 @@ export class PostService {
   }
 
   findById(id: number): Promise<Posts> {
-    return this.postRepository.findOne(id);
+    return this.postRepository.findOne(id, { relations: ['usuario'] });
   }
 
-  async delete(id: number): Promise<void> {
+  async updatePost(id: number, posts: Posts): Promise<Posts> {
+    const post = await this.postRepository.findOne(id);
+    if (post) {
+      const res = this.postRepository.merge(post, posts);
+      return await this.postRepository.save(res);
+    }
+  }
+
+  async deletePost(id: number): Promise<void> {
     await this.postRepository.delete(id);
   }
 }

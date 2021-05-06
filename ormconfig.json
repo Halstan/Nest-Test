@@ -7,6 +7,6 @@
     "password": "posgre",
     "database": "nest",
     "entities": ["dist/entity/**/*.js"],
-    "synchronize": false,
+    "synchronize": true,
     "logging": true
 }
