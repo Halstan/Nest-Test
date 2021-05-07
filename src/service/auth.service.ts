@@ -6,6 +6,7 @@ import { Usuario } from '../entity/usuario.entity';
 import * as bcrypt from 'bcrypt';
 import { Token } from '../entity/token.entity';
 import { LoginDTO } from '../dto/login.dto';
+import { BadCredentiasException } from '../exception/bad-credentials.exception';
 
 @Injectable()
 export class AuthService {
@@ -18,27 +19,33 @@ export class AuthService {
   ) {}
 
   async login(usuario: LoginDTO) {
-    try {
-      const user = await this.usuarioRepository.findOne({
+    const user = await this.usuarioRepository.findOne(
+      {
         nombreDeUsuario: usuario.username,
-      });
-      if (user) {
-        if (bcrypt.compareSync(usuario.password, user.contrasenha)) {
-          const token = new Token();
-          const payload = {
-            nombre: user.nombre,
-            apellido: user.apellidos,
-            username: user.nombreDeUsuario,
-          };
-          const jwt = this.jwtService.sign(payload);
-          token.token = jwt;
-          token.usuario = user;
-          this.tokenRepository.save(token);
-          return { access_token: jwt };
-        }
+      },
+      {
+        relations: ['roles'],
+      },
+    );
+    if (user) {
+      if (bcrypt.compareSync(usuario.password, user.contrasenha)) {
+        const rolesArr: string[] = [];
+        const token = new Token();
+        user.roles.forEach((r) => {
+          rolesArr.push(r.nombre.toUpperCase());
+        });
+        const payload = {
+          nombre: user.nombre,
+          apellido: user.apellidos,
+          username: user.nombreDeUsuario,
+          roles: rolesArr,
+        };
+        const jwt = this.jwtService.sign(payload);
+        token.token = jwt;
+        token.usuario = user;
+        this.tokenRepository.save(token);
+        return { access_token: jwt };
       }
-    } catch (error) {
-      return;
-    }
+    } else throw new BadCredentiasException();
   }
 }

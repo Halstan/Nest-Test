@@ -1,7 +1,15 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Posts } from './posts.entity';
 import { ApiHideProperty } from '@nestjs/swagger';
 import { Token } from './token.entity';
+import { Rol } from './rol.entity';
 
 @Entity()
 export class Usuario {
@@ -49,4 +57,10 @@ export class Usuario {
   @ApiHideProperty()
   @OneToMany(() => Token, (token) => token.usuario)
   tokens: Token[];
+
+  @ManyToMany(() => Rol)
+  @JoinTable({
+    name: 'usuario_rol',
+  })
+  roles: Rol[];
 }
