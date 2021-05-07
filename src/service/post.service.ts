@@ -2,25 +2,31 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Posts } from '../entity/posts.entity';
+import { Usuario } from '../entity/usuario.entity';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Posts)
     private postRepository: Repository<Posts>,
+    @InjectRepository(Usuario)
+    private usuarioRepository: Repository<Usuario>,
   ) {}
 
   findAll(): Promise<Posts[]> {
     return this.postRepository.find({ relations: ['usuario'] });
   }
 
-  addPost(post: Posts): Promise<Posts> {
-    return this.postRepository.save(post);
+  async addPost(post: Posts, username: string): Promise<Posts> {
+    const usuario = await this.usuarioRepository.findOne({
+      nombreDeUsuario: username,
+    });
+    post.usuario = usuario;
+    return await this.postRepository.save(post);
   }
 
-  findByUsuario(username: string) {
-    console.log(username);
-    return this.postRepository
+  async findByUsuario(username: string) {
+    return await this.postRepository
       .createQueryBuilder('posts')
       .innerJoinAndSelect('posts.usuario', 'usuario')
       .where('usuario.nombreDeUsuario = :username', { username: username })

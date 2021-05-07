@@ -9,15 +9,14 @@ export class Posts {
   id: number;
 
   @Column({
-    length: 30,
-    nullable: false,
-  })
-  autor: string;
-
-  @Column({
     length: 150,
   })
   text: string;
+
+  @Column({
+    default: false,
+  })
+  isCompleted: boolean;
 
   @ApiHideProperty()
   @Column({
@@ -26,6 +25,9 @@ export class Posts {
   })
   dateCreated: Date;
 
-  @ManyToOne(() => Usuario, (usuario) => usuario.posts)
+  @ManyToOne(() => Usuario, (usuario) => usuario.posts, {
+    nullable: false,
+  })
+  @ApiHideProperty()
   usuario: Usuario;
 }

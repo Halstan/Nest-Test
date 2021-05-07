@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { PostService } from '../service/post.service';
 import { Posts } from '../entity/posts.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 
 @ApiTags('posts')
@@ -26,9 +26,12 @@ export class PostController {
     return this.postService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  addPost(@Body() post: Posts): Promise<Posts> {
-    return this.postService.addPost(post);
+  @ApiBearerAuth()
+  addPost(@Request() req, @Body() post: Posts): Promise<Posts> {
+    const username = req.user.username;
+    return this.postService.addPost(post, username);
   }
 
   @Get(':id')
@@ -38,6 +41,7 @@ export class PostController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/usuario/my')
+  @ApiBearerAuth()
   findByUsuario(@Request() req) {
     const username = req.user.username;
     return this.postService.findByUsuario(username);
