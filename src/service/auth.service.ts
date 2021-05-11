@@ -19,27 +19,23 @@ export class AuthService {
   ) {}
 
   async login(usuario: LoginDTO) {
-    const user = await this.usuarioRepository.findOne(
-      {
-        nombreDeUsuario: usuario.username,
-      },
-      {
-        relations: ['roles'],
-      },
-    );
+    const user = await this.usuarioRepository
+      .createQueryBuilder('usuario')
+      .innerJoinAndSelect('usuario.rol', 'rol')
+      .where('usuario.nombreDeUsuario = :username', {
+        username: usuario.username,
+      })
+      .getOne();
     if (user) {
       if (bcrypt.compareSync(usuario.password, user.contrasenha)) {
-        const rolesArr: string[] = [];
         const token = new Token();
-        user.roles.forEach((r) => {
-          rolesArr.push(r.nombre.toUpperCase());
-        });
         const payload = {
           nombre: user.nombre,
           apellido: user.apellidos,
           username: user.nombreDeUsuario,
-          roles: rolesArr,
+          rol: user.rol.nombre,
         };
+
         const jwt = this.jwtService.sign(payload);
         token.token = jwt;
         token.usuario = user;

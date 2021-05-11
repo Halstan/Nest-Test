@@ -1,14 +1,6 @@
 import { ApiHideProperty } from '@nestjs/swagger';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Usuario } from './usuario.entity';
-import { Rol } from './rol.entity';
 
 @Entity()
 export class Posts {
@@ -17,9 +9,15 @@ export class Posts {
   id: number;
 
   @Column({
+    length: 40,
+    nullable: false,
+  })
+  titulo: string;
+
+  @Column({
     length: 150,
   })
-  text: string;
+  description: string;
 
   @Column({
     default: false,

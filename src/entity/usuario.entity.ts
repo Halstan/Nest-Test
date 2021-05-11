@@ -3,6 +3,7 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -58,9 +59,9 @@ export class Usuario {
   @OneToMany(() => Token, (token) => token.usuario)
   tokens: Token[];
 
-  @ManyToMany(() => Rol)
-  @JoinTable({
-    name: 'usuario_rol',
+  @ApiHideProperty()
+  @ManyToOne(() => Rol, (rol) => rol.usuarios, {
+    eager: true,
   })
-  roles: Rol[];
+  rol: Rol;
 }

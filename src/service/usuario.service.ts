@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from 'src/entity/usuario.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Rol } from 'src/entity/rol.entity';
 
 @Injectable()
 export class UsuarioService {
@@ -14,11 +15,12 @@ export class UsuarioService {
   ) {}
 
   findAll(): Promise<Usuario[]> {
-    return this.usuarioRepository.find({ relations: ['roles'] });
+    return this.usuarioRepository.find({ relations: ['rol'] });
   }
 
   async addUsuario(usuario: Usuario): Promise<Usuario> {
     usuario.contrasenha = await bcrypt.hash(usuario.contrasenha, this.salt);
+    usuario.rol = new Rol('42139102-7f51-4f97-902a-0765f016f364');
     return this.usuarioRepository.save(usuario);
   }
 
