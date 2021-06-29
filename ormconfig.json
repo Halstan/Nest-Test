@@ -2,11 +2,11 @@
     "name": "default",
     "type": "postgres",
     "host": "localhost",
-    "port": 6060,
-    "username": "postgres",
+    "port": 5432,
+    "username": "halstan",
     "password": "posgre",
-    "database": "nest",
+    "database": "halstan",
     "entities": ["dist/entity/**/*.js"],
-    "synchronize": false,
+    "synchronize": true,
     "logging": true
 }

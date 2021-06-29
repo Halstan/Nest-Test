@@ -10,6 +10,7 @@ export class Rol {
   @Column({
     length: 30,
     nullable: false,
+    unique: true,
   })
   nombre: string;
 

@@ -20,7 +20,7 @@ export class UsuarioService {
 
   async addUsuario(usuario: Usuario): Promise<Usuario> {
     usuario.contrasenha = await bcrypt.hash(usuario.contrasenha, this.salt);
-    usuario.rol = new Rol('42139102-7f51-4f97-902a-0765f016f364');
+    usuario.rol = new Rol('4eb683b2-3abf-462f-b21f-f275a7eed0af');
     return this.usuarioRepository.save(usuario);
   }
 
